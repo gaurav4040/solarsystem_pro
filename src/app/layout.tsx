@@ -27,6 +27,51 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <div
+          id="hint"
+          className="
+       absolute
+      
+      ml-[85vw] 
+      w-fit
+      p-4
+      bg-white/60
+      text-black
+      rounded-2xl
+      font-sans-serif
+      font-[16px]
+      hidden
+      z-50
+    "
+        >
+          <h1>Press ESC to zoom out</h1>
+        </div>
+      
+          <div
+            id="planetInfo"
+            className="absolute ml-[35vw] mt-[25vh] z-50 w-fit h-fit p-8 text-white hidden bg-black/80 rounded-2xl select-none"
+          >
+            <h2
+              id="planetName"
+              className="font-bold p-5 text-5xl text-transparent bg-gradient-to-br
+          from-blue-600 via-pink-600 to-sky-600  bg-clip-text"
+            ></h2>
+            <p
+              id="planetIntro"
+              className="font-bold p-5 text-2xl text-transparent bg-gradient-to-br
+          from-yellow-600 via-sky-600 to-amber-600  bg-clip-text"
+            ></p>
+            <ul
+              id="planetFacts"
+              className="font-bold p-5 text-xl text-transparent bg-gradient-to-br
+          from-gray-600 via-white to-gray-600  bg-clip-text"
+            ></ul>
+            <h6 className="text-gray-400">
+            designed-by GAURAV JANGRA
+          </h6>
+          </div>
+          
+    
         {children}
       </body>
     </html>

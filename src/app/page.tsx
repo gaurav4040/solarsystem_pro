@@ -4,8 +4,8 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import { Pane } from "tweakpane";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
+import { planetData } from "@/data/planet-data";
 
 interface Moon {
   name: string;
@@ -42,13 +42,41 @@ interface Planet {
 
 export default  function Home() {
   const canvasRef = useRef<HTMLCanvasElement|null>(null);
- 
+  const containerRef = useRef<HTMLDivElement | null>(null); // NEW
+
+  
+
   useEffect(()=>{
     if (!canvasRef.current) return;
 
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const pane = new Pane();
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(width, height);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0';
+    labelRenderer.domElement.style.left = '0';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    containerRef.current?.appendChild(labelRenderer.domElement);
+
+    function addLabel(target: THREE.Object3D, text: string, yOffset = 10) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      div.style.padding = '2px 2px';
+      div.style.fontFamily = 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+      div.style.fontSize = '12px';
+      div.style.color = '#fff';
+      div.style.background = 'rgba(0,0,0,0.55)';
+      div.style.borderRadius = '8px';
+      div.style.whiteSpace = 'nowrap';
+      div.style.backdropFilter = 'blur(2px)';
+    
+      const obj = new CSS2DObject(div);
+      obj.position.set(0, yOffset, 0);
+      target.add(obj);
+      return obj;
+    }
 
     const scene = new THREE.Scene();
     const pCamera = new THREE.PerspectiveCamera(35,width/height,0.1,100000);
@@ -244,6 +272,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
 
     const sunMesh = new THREE.Mesh((new THREE.SphereGeometry(40,66,66)),sunMaterial);
+    addLabel(sunMesh, ("sun").toUpperCase(), 40 * 1.6);
     scene.add(sunMesh);
 
     const planets:Planet[] = [
@@ -674,10 +703,12 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
           new THREE.SphereGeometry(planet.radius, 66,66),
           planet.material
         );
-        planet.mesh=planetMesh
+        planet.mesh=planetMesh;
+        planetMesh.name=planet.name;
 
         planetMesh.rotation.z = THREE.MathUtils.degToRad(planet.inclination)
-
+        addLabel(planetMesh, planet.name.toUpperCase(), planet.radius * 1.6);
+        
       // planetMesh.scale.setScalar(planet.radius);
 
         // planetMesh.position.x=planet.position;  
@@ -691,6 +722,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
               moon.material);
               //  moonMesh.scale.setScalar(moon.radius)
               moonPivot.add(moonMesh);
+              // addLabel(moonMesh, moon.name, moon.radius * 2.2);
               if(planet.name=="jupiter"||planet.name=="saturn"){       
                 moonMesh.position.x=planet.radius+moon.position;
               }else{
@@ -757,7 +789,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
   meshArray[5].add(saturnRing);
   
   // Uranus’ rings (thinner, darker)
-  const uranusRing = createPlanetRing(planets[6].radius * 1.1, planets[6].radius * 1.5, "/textures/uranus/RING/uranusringcolor.jpg","/textures/uranus/RING/uranusringtrans.gif");
+  const uranusRing = createPlanetRing(planets[6].radius * 1.1, planets[6].radius * 1.5, "/textures/uranus/RING/uranusringcolour.jpg","/textures/uranus/RING/uranusringtrans.gif");
   uranusRing.rotation.x = THREE.MathUtils.degToRad(planets[6].inclination); // tilt
   meshArray[6].add(uranusRing);
   
@@ -812,29 +844,148 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       // scaled up
       scene.add(orbit);
     });
+
+    let focusTarget: THREE.Mesh | null = null;
+    let followDistance = 0;
+
     
+
+
+    function getClosestPlanet(pointer: THREE.Vector2): THREE.Mesh | null {
+      let closest: THREE.Mesh | null = null;
+      let minDist = Infinity;
+    
+      const planetPos = new THREE.Vector3();
+    
+      meshArray.forEach((planet: THREE.Mesh) => {
+        planet.getWorldPosition(planetPos);
+    
+        // Project planet position to screen
+        const screenPos = planetPos.clone().project(pCamera);
+    
+        const dx = screenPos.x - pointer.x;
+        const dy = screenPos.y - pointer.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+    
+        if (dist < 0.1 && dist < minDist) { // 0.1 ≈ 10% of screen width → "range"
+          closest = planet;
+          minDist = dist;
+        }
+      });
+    
+      return closest;
+    }
+    // Track pointer position
+    const pointer = new THREE.Vector2();
+
+    window.addEventListener("click", (event) => {
+      // Convert click position to normalized device coordinates (-1 to +1)
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+      const planet = getClosestPlanet(pointer);
+      if (planet) focusOnPlanet(planet);
+    });
+    
+    
+    const hint = document.getElementById("hint")!;
+    hint.style.display = "none";
+   
+    function focusOnPlanet(planet: THREE.Mesh) {
+      focusTarget = planet;
+      const planetRadius = (planet.geometry as THREE.SphereGeometry).parameters.radius;
+      followDistance = planetRadius * 12;
+      
+      savedCameraPos.copy(pCamera.position);
+      controls.target.copy(savedCameraTarget); // get old target
+      savedCameraTarget.copy(controls.target);
+
+      const infoBox = document.getElementById("planetInfo")!;
+      infoBox.classList.remove('hidden')
+      const nameEl = document.getElementById("planetName")!;
+      const introEl = document.getElementById("planetIntro")!;
+      const factsEl = document.getElementById("planetFacts")!;
+    
+      const data = planetData[planet.name];
+      
+      console.log("hello",planet,planet.name,data)
+      if (data) {
+        nameEl.textContent = planet.name;
+        introEl.textContent = data.intro;
+        factsEl.innerHTML = data.facts.map(f => `<li>${f}</li>`).join("");
+        infoBox.classList.remove("hidden");
+      }
+
+      
+      hint.style.display = "block"; // show text
+    }
+
+    let savedCameraPos = new THREE.Vector3();
+    let savedCameraTarget = new THREE.Vector3();
+   
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        focusTarget = null;
+        
+        // restore camera
+        pCamera.position.copy(savedCameraPos);
+        controls.target.copy(savedCameraTarget);
+
+        document.getElementById("planetInfo")?.classList.add("hidden");
+        hint.style.display = "none"; // hide text
+      }
+    });
 
 
     const renderLoop =()=>{
       
+      let rotateFlag=true;
+
+      if (focusTarget) {
+        const planetPos = new THREE.Vector3();
+        focusTarget.getWorldPosition(planetPos);
+      
+        // Direction from origin → planet
+        const dir = planetPos.clone().normalize();
+      
+        // Place camera behind + slightly above planet
+        const desiredPos = planetPos.clone().add(
+          dir.clone().multiplyScalar(followDistance).add(new THREE.Vector3(0, followDistance * 0.1, 0))
+        );
+      
+        // 🔒 Lock camera instantly (no lag)
+        pCamera.position.lerp(desiredPos,0.2);
+        pCamera.lookAt(planetPos);
+      
+        controls.enabled = false;
+      } else {
+        controls.enabled = true;
+      }
+      
+      
+      
+
+
       const elapsedTime = clock.getElapsedTime()
       //*sun ANCHOR
       sunMesh.rotateY(-0.001)
       asteroidBelt.rotation.y += 0.0008;
 
       meshArray.forEach((planet,index)=>{
-        console.log('planet',planet);
+      
         
         //*planet  ANCHOR
         const a = planets[index].a;                 
         const b = planets[index].b;
         const speed = planets[index].speed;
-        planet.rotateY(-planets[index].rotationSpeed*0.01);
-        planet.position.x= a + a*20*Math.sin(elapsedTime*speed);
-        planet.position.z= b + b*20*Math.cos(elapsedTime*speed);
+        rotateFlag?planet.rotateY(-planets[index].rotationSpeed*0.01):planet.rotateY(0);
+        const dir = planets[index].retrograde ? -1 : 1;
+        const x = planets[index].a * 20 * Math.cos(elapsedTime * speed * dir);
+        const z = planets[index].b * 20 * Math.sin(elapsedTime * speed * dir);
+        planet.position.set(x, planet.position.y, z);
 
         planet.children.forEach((child)=>{child.children.forEach((moon,ind)=>{
-          console.log('moon',moon);
+          
           //*MOON ANCHOR
           const aMoon = planets[index].moons[ind].a;        // semi-major axis  // eccentricity
           const bMoon = planets[index].moons[ind].b;
@@ -851,6 +1002,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
       controls.update();
       renderer.render(scene,pCamera);
+      labelRenderer.render(scene, pCamera); // NEW
+
+      // const dist = pCamera.position.distanceTo(planetMesh.getWorldPosition(new THREE.Vector3()));
+      //   label.element.style.opacity = dist > 1500 ? '0.2' : '1';
+
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+      // in resize handler:
+      labelRenderer.setSize(newWidth, newHeight);
       window.requestAnimationFrame(renderLoop);
     }
     renderLoop();
@@ -858,6 +1018,8 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
 
   return (
-    <canvas ref={canvasRef}></canvas>  
+    <div ref={containerRef} style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      <canvas ref={canvasRef} style={{ display: 'block' }} />
+    </div>  
   );
 }
