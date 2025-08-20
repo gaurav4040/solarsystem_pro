@@ -28,6 +28,26 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div
+         id="statusEl"
+         className="
+      absolute
+     mr-[85vw] 
+     ml-4
+     w-fit
+     mt-2
+     p-4
+     bg-gray-800/80
+     text-white
+     rounded-2xl
+     font-sans-serif
+     font-[16px]
+     hidden
+     z-50
+   "
+        >
+          <h1> hold to drag using left/right mouse button  </h1>
+        </div>
+        <div
           id="hint"
           className="
        absolute
@@ -35,8 +55,8 @@ export default function RootLayout({
       w-fit
       mt-2
       p-4
-      bg-white/60
-      text-black
+      bg-gray-800/60
+      text-white
       rounded-2xl
       font-sans-serif
       font-[16px]

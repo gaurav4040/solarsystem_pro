@@ -169,8 +169,8 @@ export default  function Home() {
       canvas:canvasRef.current?canvasRef.current:undefined,
       antialias:true
     });
-    pCamera.position.z=1000;
-    pCamera.position.y=5;
+    pCamera.position.z=2000;
+    pCamera.position.y=600;
     
    const ambientLight = new THREE.AmbientLight(0xffffff);
    const pointLight1 = new THREE.PointLight(0xffffff, 999999);
@@ -1021,6 +1021,31 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       }
     });
 
+    let idleTimer:any;
+    const statusEl = document.getElementById("statusEl")!;
+
+    function resetTimer() {
+      clearTimeout(idleTimer);
+      document.getElementById("statusEl")?.classList.add("hidden")
+      
+      statusEl.style.display="none";
+
+      // set 2 sec timer
+      idleTimer = setTimeout(() => {
+        statusEl.classList.remove("hidden");
+        
+        statusEl.style.display="block";
+
+      }, 1500);
+    }
+
+    // detect movement
+    window.addEventListener("mousemove", ()=>{
+      resetTimer();
+    });
+
+    // initialize timer
+    resetTimer();
 
     const renderLoop =()=>{
       
@@ -1083,6 +1108,8 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
         
       });
+
+      
 
 
       controls.update();
