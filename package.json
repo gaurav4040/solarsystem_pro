@@ -2,12 +2,11 @@
   "name": "solarsystem_pro",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "dev": "next dev",
-  "build": "next build && next export",
-  "start": "serve out"
-}
-,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
     "gsap": "^3.13.0",
     "next": "15.5.0",
