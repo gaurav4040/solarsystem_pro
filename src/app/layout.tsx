@@ -31,9 +31,9 @@ export default function RootLayout({
           id="hint"
           className="
        absolute
-      
       ml-[85vw] 
       w-fit
+      mt-2
       p-4
       bg-white/60
       text-black
@@ -44,7 +44,7 @@ export default function RootLayout({
       z-50
     "
         >
-          <h1>Press ESC to zoom out</h1>
+          <h1>Press ESC </h1>
         </div>
       
           <div
