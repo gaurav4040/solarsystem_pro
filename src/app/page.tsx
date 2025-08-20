@@ -59,28 +59,54 @@ export default  function Home() {
     pCamera.position.z=1000;
     pCamera.position.y=5;
     
-   const ambientLight = new THREE.AmbientLight(0xffffff,2);
-   const pointLight1 = new THREE.PointLight(0xffffff, 20);
-   const pointLight2 = new THREE.PointLight(0xffffff, 20);
-   const pointLight3 = new THREE.PointLight(0xffffff, 20);
-   const pointLight4 = new THREE.PointLight(0xffffff, 20);
-   const pointLight5 = new THREE.PointLight(0xffffff, 20);
-   const pointLight6 = new THREE.PointLight(0xffffff, 20);
-   const pointLight7 = new THREE.PointLight(0xffffff, 20);
-   const pointLight8 = new THREE.PointLight(0xffffff, 20);
+   const ambientLight = new THREE.AmbientLight(0xffffff);
+   const pointLight1 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight2 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight3 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight4 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight5 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight6 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight7 = new THREE.PointLight(0xffffff, 999999);
+   const pointLight8 = new THREE.PointLight(0xffffff, 999999);
 
 
-    pointLight1.position.set(8, 8, 8);
-    pointLight2.position.set(-8, 8, 8);
-    pointLight3.position.set(8, -8, 8);
-    pointLight4.position.set(8, 8, -8);
-    pointLight5.position.set(8, -8, -8);
-    pointLight6.position.set(-8, -8, 8);
-    pointLight7.position.set(-8, 8, -8);
-    pointLight8.position.set(-8, -8, -8);
-   
+    pointLight1.position.set(0, 0, 0);
+    pointLight2.position.set(-0, 0, 0);
+    pointLight3.position.set(0, -0, 0);
+    pointLight4.position.set(0, 0, -0);
+    pointLight5.position.set(0, -0, -0);
+    pointLight6.position.set(-0, -0, 0);
+    pointLight7.position.set(-0, 0, -0);
+    pointLight8.position.set(-0, -0, -0);
+    scene.add(
+      ambientLight,
+      pointLight1,
+      pointLight2,
+      pointLight3,
+      pointLight4,
+      pointLight5,
+      pointLight6,
+      pointLight7,
+      pointLight8,
+      // asteroidBelt
+    );
 
 const textureLoader = new THREE.TextureLoader();
+
+//*miklkyWay
+const cubeTextureLoader = new THREE.CubeTextureLoader()
+cubeTextureLoader.setPath('/textures/cubemap/')
+
+const milkyway = cubeTextureLoader.load([
+  'px.png',
+  'nx.png',
+  'py.png',
+  'ny.png',
+  'pz.png',
+  'nz.png',
+])
+scene.background=milkyway
+
 //*Sun
    const sunTexture = textureLoader.load('/textures/sun/sun.jpg');
 
@@ -99,8 +125,8 @@ const textureLoader = new THREE.TextureLoader();
    const marsBumpTexture = textureLoader.load('/textures/mars/marsbump1k.jpg');
 //*jupiter
    const jupiterTexture = textureLoader.load('/textures/jupiter/jupitermap.jpg');
-   const jupiterAoTexture = textureLoader.load('/textures/jupiter/jupiter2_1k.jpg');
-   const jupiterNormalTexture = textureLoader.load('/textures/jupiter/RS3_Jupiter.webp');
+  //  const jupiterAoTexture = textureLoader.load('/textures/jupiter/jupiter2_1k.jpg');
+  //  const jupiterNormalTexture = textureLoader.load('/textures/jupiter/RS3_Jupiter.webp');
 //*saturn
    const saturnTexture = textureLoader.load('/textures/saturn/saturnmap.jpg');
 //*uranus
@@ -149,17 +175,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
  const venusMaterial = new THREE.MeshStandardMaterial({map:venusTexture,bumpMap:venusBumpTexture});
 //*earth
  const earthMaterial = new THREE.MeshStandardMaterial({map:earthTexture,bumpMap:earthBumpTexture});
-    earthMaterial.aoMap = earthBumpTexture;
-    earthMaterial.aoMapIntensity = 0.9;
 //*mars
  const marsMaterial = new THREE.MeshStandardMaterial({map:marsTexture,bumpMap:marsBumpTexture,normalMap:marsNormalTexture});
  
 //*jupiter
- const jupiterMaterial = new THREE.MeshStandardMaterial({map:jupiterTexture,aoMap:jupiterAoTexture,normalMap:jupiterNormalTexture});
+ const jupiterMaterial = new THREE.MeshStandardMaterial({map:jupiterTexture});
 //*saturn
- const saturnMaterial = new THREE.MeshStandardMaterial({map:saturnTexture,aoMap:saturnTexture,normalMap:saturnTexture});
+ const saturnMaterial = new THREE.MeshStandardMaterial({map:saturnTexture});
 //*uranus
- const uranusMaterial = new THREE.MeshStandardMaterial({map:uranusTexture,aoMap:uranusTexture});
+ const uranusMaterial = new THREE.MeshStandardMaterial({map:uranusTexture});
 //*neptune
  const neptuneMaterial = new THREE.MeshStandardMaterial({map:neptuneTexture});
 //*pluto
@@ -220,7 +244,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
 
     const sunMesh = new THREE.Mesh((new THREE.SphereGeometry(40,66,66)),sunMaterial);
-    
+    scene.add(sunMesh);
 
     const planets:Planet[] = [
       {
@@ -738,19 +762,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
   meshArray[6].add(uranusRing);
   
   
-    scene.add(
-      ambientLight,
-      pointLight1,
-      pointLight2,
-      pointLight3,
-      pointLight4,
-      pointLight5,
-      pointLight6,
-      pointLight7,
-      pointLight8,
-      sunMesh,
-      // asteroidBelt
-    );
+   
     
     renderer.setSize(width,height);
     window.addEventListener("resize",()=>{
@@ -808,7 +820,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       const elapsedTime = clock.getElapsedTime()
       //*sun ANCHOR
       sunMesh.rotateY(-0.001)
-      asteroidBelt.rotation.y += 0.002;
+      asteroidBelt.rotation.y += 0.0008;
 
       meshArray.forEach((planet,index)=>{
         console.log('planet',planet);
