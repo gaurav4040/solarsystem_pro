@@ -1,6 +1,9 @@
 {
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/" }
-    ]
-  }
-  
+  "builds": [
+    { "src": "package.json", "use": "@vercel/next" }
+  ],
+  "outputDirectory": "out",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
