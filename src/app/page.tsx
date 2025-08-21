@@ -50,14 +50,17 @@ export default  function Home() {
   sun: {
     intro: "The star at the center of our solar system, providing the energy that sustains life on Earth.",
     facts: [
+      "Type: Yellow dwarf star (G-type main-sequence)",
       "Diameter: ~1.39 million km",
       "Mass: ~333,000 times Earth’s mass",
       "Surface temperature: ~5,500°C (photosphere)",
       "Core temperature: ~15 million °C",
       "Composition: ~74% hydrogen, ~24% helium",
+      "Distance from Earth: ~150 million km (1 AU)",
       "Produces energy through nuclear fusion"
     ]
   },
+  
   mercury: {
     intro: "The smallest and closest planet to the Sun.",
     facts: [
@@ -180,9 +183,9 @@ export default  function Home() {
       canvas:canvasRef.current?canvasRef.current:undefined,
       antialias:true
     });
-    pCamera.position.z=2000;
-    pCamera.position.y=600;
-    
+    pCamera.position.z=0;
+    pCamera.position.y=10;
+    pCamera.position.x=2450;
    const ambientLight = new THREE.AmbientLight(0xffffff);
    const pointLight1 = new THREE.PointLight(0xffffff, 999999);
    const pointLight2 = new THREE.PointLight(0xffffff, 999999);
@@ -233,7 +236,7 @@ scene.background=milkyway
 
 //*Sun
    const sunTexture = textureLoader.load('/textures/sun/sun.jpg');
-
+   const sunGlowTexture = textureLoader.load('/textures/sun/glow.png')
 //*mercury
    const mercuryTexture = textureLoader.load('/textures/mercury/mercurymap.jpg');
    const mercuryBumpTexture = textureLoader.load('/textures/mercury/mercurybump.jpg');
@@ -241,7 +244,7 @@ scene.background=milkyway
    const venusTexture = textureLoader.load('/textures/venus/venusmap.jpg');
    const venusBumpTexture = textureLoader.load('/textures/venus/venusbump.jpg');
 //* Earth
-   const earthTexture = textureLoader.load('/textures/earth/earthmap1k.jpg');
+   const earthTexture = textureLoader.load('/textures/earth/earth_semi2.webp');
    const earthBumpTexture = textureLoader.load('/textures/earth/earthbump1k.jpg');
 //*mars
    const marsTexture = textureLoader.load('/textures/mars/marsmap1k.jpg');
@@ -291,7 +294,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 // const styxMoonTexture = textureLoader.load('/textures/styx/MOON/')
 
 //*sun
- const sunMaterial = new THREE.MeshBasicMaterial({color:'orange'});
+ const sunMaterial = new THREE.MeshBasicMaterial({color:'yellow'});
     sunMaterial.map=sunTexture;
 //*mercury
  const mercuryMaterial = new THREE.MeshStandardMaterial({map:mercuryTexture,bumpMap:mercuryBumpTexture});
@@ -367,10 +370,22 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
   
 
 
-    const sunMesh = new THREE.Mesh((new THREE.SphereGeometry(40,66,66)),sunMaterial);
+    const sunMesh = new THREE.Mesh((new THREE.SphereGeometry(50,66,66)),sunMaterial);
     sunMesh.name = "sun"; 
     addLabel(sunMesh, ("sun").toUpperCase(), 40 * 1.6);
     scene.add(sunMesh);
+    const spriteMaterial = new THREE.SpriteMaterial({
+      map: sunGlowTexture,
+      color: 0xFFFF00,
+      transparent: true,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const glow = new THREE.Sprite(spriteMaterial);
+    glow.scale.set(180, 180, 1);
+     // bigger than sun
+    sunMesh.add(glow);
+
 
     const planets:Planet[] = [
       {
@@ -378,11 +393,11 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         a: 3.8,
         e: 0.206,
         b: 3.8 * Math.sqrt(1 - 0.206 * 0.206),
-        speed: 0.1,
+        speed: 0.24,
         material: mercuryMaterial,
         inclination: 7,
         retrograde: false,
-        radius: 0.38,
+        radius: 8.38,
         position: 3.8,
         rotationSpeed: 0.017,
         moons: []
@@ -392,11 +407,11 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         a: 7.2,
         e: 0.007,
         b: 7.2 * Math.sqrt(1 - 0.007 * 0.007),
-        speed: 0.01,
+        speed: 0.06,
         material: venusMaterial,
         inclination: 3.4,
         retrograde: true,
-        radius: 0.95,
+        radius: 9.95,
         position: 7.2,
         rotationSpeed: -0.004,
         moons: []
@@ -410,7 +425,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         material: earthMaterial,
         inclination: 0,
         retrograde: false,
-        radius: 1,
+        radius: 9,
         position: 10,
         rotationSpeed: 1.0,
         moons: [
@@ -438,7 +453,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         material: marsMaterial,
         inclination: 1.85,
         retrograde: false,
-        radius: 0.53,
+        radius: 8.53,
         position: 15.2,
         rotationSpeed: 0.97,
         moons: [
@@ -472,15 +487,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "jupiter",
-        a: 52,
+        a: 32,
         e: 0.049,
-        b: 52 * Math.sqrt(1 - 0.049 * 0.049),
+        b: 32 * Math.sqrt(1 - 0.049 * 0.049),
         speed: 0.02,
         material: jupiterMaterial,
         inclination: 1.3,
         retrograde: false,
-        radius: 11.2,
-        position: 52,
+        radius: 19.2,
+        position: 32,
         rotationSpeed: 2.44,
         moons: [
           {
@@ -539,15 +554,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "saturn",
-        a: 95,
+        a: 44,
         e: 0.056,
-        b: 95 * Math.sqrt(1 - 0.056 * 0.056),
+        b: 44 * Math.sqrt(1 - 0.056 * 0.056),
         speed: 0.01,
         material: saturnMaterial,
         inclination: 2.5,
         retrograde: false,
-        radius: 9.45,
-        position: 95,
+        radius: 17.45,
+        position: 44,
         rotationSpeed: 2.3,
         moons: [
           {
@@ -606,15 +621,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "uranus",
-        a: 92,
+        a: 70,
         e: 0.046,
-        b: 92 * Math.sqrt(1 - 0.046 * 0.046),
+        b: 70 * Math.sqrt(1 - 0.046 * 0.046),
         speed: 0.007,
         material: uranusMaterial,
         inclination: 0.8,
         retrograde: true,
-        radius: 4,
-        position: 92,
+        radius: 12,
+        position: 70,
         rotationSpeed: -1.39,
         moons: [
           {
@@ -686,15 +701,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "neptune",
-        a: 200,
+        a: 95,
         e: 0.009,
-        b: 200 * Math.sqrt(1 - 0.009 * 0.009),
+        b: 95 * Math.sqrt(1 - 0.009 * 0.009),
         speed: 0.005,
         material: neptuneMaterial,
         inclination: 1.8,
         retrograde: false,
-        radius: 3.9,
-        position: 200,
+        radius: 11.9,
+        position: 95,
         rotationSpeed: 1.5,
         moons: [
           {
@@ -740,15 +755,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "pluto",
-        a: 295,
+        a: 120,
         e: 0.25,
-        b: 295 * Math.sqrt(1 - 0.25 * 0.25),
-        speed: 0.4,
+        b: 120 * Math.sqrt(1 - 0.25 * 0.25),
+        speed: 0.004,
         material: plutoMaterial,
         inclination: 17.2,
         retrograde: true,
-        radius: 0.48,
-        position: 295,
+        radius: 6,
+        position: 120,
         rotationSpeed: -0.16,
         moons: [
           {
@@ -861,7 +876,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
   
   // Example: Add between Mars (~228M km) and Jupiter (~778M km)
   // Scale down radii for your system
-  const asteroidBelt = createAsteroidBelt(400, 960, 9999);
+  const asteroidBelt = createAsteroidBelt(350, 560, 9999);
   scene.add(asteroidBelt);
   
   function createPlanetRing(innerRadius: number, outerRadius: number, textureUrl: string,textureUrl2:string) {
@@ -1111,7 +1126,8 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         );
       
         // 🔒 Lock camera instantly (no lag)
-        pCamera.position.lerp(desiredPos,0.8);
+        pCamera.position.lerp(desiredPos, 0.05); // smooth movement
+        controls.target.lerp(planetPos, 0.05); 
         pCamera.lookAt(planetPos);
       
         controls.enabled = false;
@@ -1125,7 +1141,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
       const elapsedTime = clock.getElapsedTime()
       //*sun ANCHOR
-      sunMesh.rotateY(-0.001)
+      sunMesh.rotateY(-0.01)
       asteroidBelt.rotation.y += 0.0008;
 
       meshArray.forEach((planet,index)=>{
