@@ -1029,7 +1029,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
     let savedCameraTarget = new THREE.Vector3();
     savedCameraPos.copy(pCamera.position);
     savedCameraTarget.copy(controls.target);
-      const planetInfo = document.getElementById("planetInfo");
+    const planetInfo = document.getElementById("planetInfo")!;
    
     
       function restoreCameraAndClose() {
@@ -1048,7 +1048,8 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
     
       // ✅ Mobile tap outside
       document.addEventListener("touchstart", (e) => {
-        if (planetInfo && !planetInfo.contains(e.target as Node)) {
+        if (!planetInfo.classList.contains("hidden") && !planetInfo.contains(e.target as Node)) {
+          console.log('click')
           restoreCameraAndClose();
         }
       });
@@ -1059,7 +1060,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         touchStartY = e.touches[0].clientY;
       });
       document.addEventListener("touchend", (e) => {
-        if (e.changedTouches[0].clientY - touchStartY > 50) {
+        if (e.changedTouches[0].clientY - touchStartY > 50&&planetInfo) {
           restoreCameraAndClose();
         }
       });
