@@ -78,7 +78,7 @@ export default function RootLayout({
             p-6 md:p-6
             text-white
             hidden
-            bg-black/80
+            bg-black/40
             rounded-2xl
             select-none
           "
