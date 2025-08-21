@@ -1043,7 +1043,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
     window.addEventListener("mousemove", ()=>{
       resetTimer();
     });
-
+    window.addEventListener("touchstart", resetTimer);
     // initialize timer
     resetTimer();
 
