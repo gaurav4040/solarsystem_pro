@@ -27,71 +27,81 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Drag hint */}
         <div
-         id="statusEl"
-         className="
-      absolute
-     mr-[85vw] 
-     ml-4
-     w-fit
-     mt-2
-     p-4
-     bg-gray-800/80
-     text-white
-     rounded-2xl
-     font-sans-serif
-     font-[16px]
-     hidden
-     z-50
-   "
+          id="statusEl"
+          className="
+            absolute
+            left-2 top-2
+            w-fit
+            p-3
+            bg-gray-800/80
+            text-white
+            rounded-xl
+            text-sm md:text-base
+            hidden
+            z-50
+          "
         >
-          <h1> hold to drag using left/right mouse button  </h1>
+          <h1>Hold to drag using left/right mouse button</h1>
         </div>
+
+        {/* ESC hint */}
         <div
           id="hint"
           className="
-       absolute
-      ml-[85vw] 
-      w-fit
-      mt-2
-      p-4
-      bg-gray-800/60
-      text-white
-      rounded-2xl
-      font-sans-serif
-      font-[16px]
-      hidden
-      z-50
-    "
+            absolute
+            right-2 top-2
+            w-fit
+            p-3
+            bg-gray-800/60
+            text-white
+            rounded-xl
+            text-sm md:text-base
+            hidden
+            z-50
+          "
         >
-          <h1>Press ESC </h1>
+          <h1>Press ESC</h1>
         </div>
-      
-          <div
-            id="planetInfo"
-            className="absolute ml-[35vw] mt-[25vh] z-50 w-fit h-fit p-8 text-white hidden bg-black/80 rounded-2xl select-none"
-          >
-            <h2
-              id="planetName"
-              className="font-bold p-5 text-5xl text-transparent bg-gradient-to-br
-          from-blue-600 via-pink-600 to-sky-600  bg-clip-text"
-            ></h2>
-            <p
-              id="planetIntro"
-              className="font-bold p-5 text-2xl text-transparent bg-gradient-to-br
-          from-yellow-600 via-sky-600 to-amber-600  bg-clip-text"
-            ></p>
-            <ul
-              id="planetFacts"
-              className="font-bold p-5 text-xl text-transparent bg-gradient-to-br
-          from-gray-600 via-white to-gray-600  bg-clip-text"
-            ></ul>
-            <h6 className="text-gray-400">
+
+        {/* Planet Info */}
+        <div
+          id="planetInfo"
+          className="
+            absolute
+            inset-x-4 md:inset-x-auto
+            top-[20vh] md:ml-[35vw] md:top-[25vh]
+            z-50
+            max-w-[90vw] md:w-fit
+            p-6 md:p-8
+            text-white
+            hidden
+            bg-black/80
+            rounded-2xl
+            select-none
+          "
+        >
+          <h2
+            id="planetName"
+            className="font-bold p-3 text-3xl md:text-5xl text-transparent bg-gradient-to-br
+              from-blue-600 via-pink-600 to-sky-600 bg-clip-text"
+          ></h2>
+          <p
+            id="planetIntro"
+            className="font-bold p-3 text-xl md:text-2xl text-transparent bg-gradient-to-br
+              from-yellow-600 via-sky-600 to-amber-600 bg-clip-text"
+          ></p>
+          <ul
+            id="planetFacts"
+            className="font-bold p-3 text-lg md:text-xl text-transparent bg-gradient-to-br
+              from-gray-600 via-white to-gray-600 bg-clip-text"
+          ></ul>
+          <h6 className="text-gray-400 text-sm md:text-base">
             designed-by GAURAV JANGRA
           </h6>
-          </div>
-          
-    
+        </div>
+
         {children}
       </body>
     </html>
