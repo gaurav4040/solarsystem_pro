@@ -1060,7 +1060,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         touchStartY = e.touches[0].clientY;
       });
       document.addEventListener("touchend", (e) => {
-        if (e.changedTouches[0].clientY - touchStartY > 50&&planetInfo) {
+        if (e.changedTouches[0].clientY - touchStartY > 50&&!planetInfo.classList.contains("hidden")) {
           restoreCameraAndClose();
         }
       });
