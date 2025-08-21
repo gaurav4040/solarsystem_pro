@@ -47,6 +47,20 @@ export default  function Home() {
   string,
   { intro: string; facts: string[] }
 > = {
+  sun: {
+    intro: "The star at the center of our solar system, providing the energy that sustains life on Earth.",
+    facts: [
+      "Type: Yellow dwarf star (G-type main-sequence)",
+      "Diameter: ~1.39 million km",
+      "Mass: ~333,000 times Earth’s mass",
+      "Surface temperature: ~5,500°C (photosphere)",
+      "Core temperature: ~15 million °C",
+      "Composition: ~74% hydrogen, ~24% helium",
+      "Distance from Earth: ~150 million km (1 AU)",
+      "Produces energy through nuclear fusion"
+    ]
+  },
+  
   mercury: {
     intro: "The smallest and closest planet to the Sun.",
     facts: [
@@ -357,6 +371,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
 
 
     const sunMesh = new THREE.Mesh((new THREE.SphereGeometry(40,66,66)),sunMaterial);
+    sunMesh.name = "sun"; 
     addLabel(sunMesh, ("sun").toUpperCase(), 40 * 1.6);
     scene.add(sunMesh);
 
@@ -783,7 +798,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
   ];
 
     const meshArray =  planets.map((planet:Planet)=>{
-      console.log(planet);
+      
       const planetMesh = new THREE.Mesh(
           new THREE.SphereGeometry(planet.radius, 66,66),
           planet.material
@@ -819,7 +834,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
           }
           scene.add(planetMesh)
           return planetMesh
-  })
+  });meshArray.push(sunMesh);
 
   function createAsteroidBelt(innerRadius: number, outerRadius: number, count: number) {
     const belt = new THREE.Group();
@@ -941,7 +956,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       let minDist = Infinity;
     
       const planetPos = new THREE.Vector3();
-    
+      
       meshArray.forEach((planet: THREE.Mesh) => {
         planet.getWorldPosition(planetPos);
     
@@ -985,15 +1000,19 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       controls.target.copy(savedCameraTarget); // get old target
       savedCameraTarget.copy(controls.target);
 
+
+
       const infoBox = document.getElementById("planetInfo")!;
       infoBox.classList.remove('hidden')
       const nameEl = document.getElementById("planetName")!;
       const introEl = document.getElementById("planetIntro")!;
       const factsEl = document.getElementById("planetFacts")!;
-    
+      
+
+
       const data = planetData[planet.name];
       
-      console.log("hello",planet,planet.name,data)
+     
       if (data) {
         nameEl.textContent = planet.name;
         introEl.textContent = data.intro;
@@ -1005,21 +1024,51 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       hint.style.display = "block"; // show text
     }
 
+    //!--------------------------------------------------------------------------------
     let savedCameraPos = new THREE.Vector3();
     let savedCameraTarget = new THREE.Vector3();
+    savedCameraPos.copy(pCamera.position);
+    savedCameraTarget.copy(controls.target);
+      const planetInfo = document.getElementById("planetInfo");
    
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
+    
+      function restoreCameraAndClose() {
         focusTarget = null;
-        
-        // restore camera
         pCamera.position.copy(savedCameraPos);
         controls.target.copy(savedCameraTarget);
-
-        document.getElementById("planetInfo")?.classList.add("hidden");
-        hint.style.display = "none"; // hide text
+    
+        planetInfo?.classList.add("hidden");
+        if (hint) hint.style.display = "none";
       }
-    });
+    
+      // ✅ ESC for desktop
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") restoreCameraAndClose();
+      });
+    
+      // ✅ Mobile tap outside
+      document.addEventListener("touchstart", (e) => {
+        if (planetInfo && !planetInfo.contains(e.target as Node)) {
+          restoreCameraAndClose();
+        }
+      });
+    
+      // ✅ Mobile swipe down
+      let touchStartY = 0;
+      document.addEventListener("touchstart", (e) => {
+        touchStartY = e.touches[0].clientY;
+      });
+      document.addEventListener("touchend", (e) => {
+        if (e.changedTouches[0].clientY - touchStartY > 50) {
+          restoreCameraAndClose();
+        }
+      });
+    
+
+
+// 🚀 setup events AFTER elements exist in DOM
+
+
 
     let idleTimer:any;
     const statusEl = document.getElementById("statusEl")!;
@@ -1082,18 +1131,19 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       asteroidBelt.rotation.y += 0.0008;
 
       meshArray.forEach((planet,index)=>{
-      
-        
-        //*planet  ANCHOR
-        const a = planets[index].a;                 
-        const b = planets[index].b;
-        const speed = planets[index].speed;
-        rotateFlag?planet.rotateY(-planets[index].rotationSpeed*0.01):planet.rotateY(0);
-        const dir = planets[index].retrograde ? -1 : 1;
+        if(index<meshArray.length-1){
+
+          
+          //*planet  ANCHOR
+          const a = planets[index].a;                 
+          const b = planets[index].b;
+          const speed = planets[index].speed;
+          rotateFlag?planet.rotateY(-planets[index].rotationSpeed*0.01):planet.rotateY(0);
+          const dir = planets[index].retrograde ? -1 : 1;
         const x = planets[index].a * 20 * Math.cos(elapsedTime * speed * dir);
         const z = planets[index].b * 20 * Math.sin(elapsedTime * speed * dir);
         planet.position.set(x, planet.position.y, z);
-
+        
         planet.children.forEach((child)=>{child.children.forEach((moon,ind)=>{
           
           //*MOON ANCHOR
@@ -1103,12 +1153,13 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
           moon.rotateY(-planets[index].moons[ind].rotationSpeed*0.01);  
           moon.position.x =aMoon*2 + aMoon * Math.sin(elapsedTime * speedMoon);
           moon.position.z =bMoon*6 + bMoon * Math.cos(elapsedTime * speedMoon);
-
+          
         })});
-
         
+        
+      }
       });
-
+      
       
 
 
