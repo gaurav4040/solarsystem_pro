@@ -43,7 +43,7 @@ export default function RootLayout({
             z-50
           "
         >
-          <h1>Hold to drag using left/right mouse button</h1>
+          <h1>drag using left/right<br/>mouse button or touch</h1>
         </div>
 
         {/* ESC hint */}
@@ -71,11 +71,11 @@ export default function RootLayout({
           className="
             absolute
             inset-x-4 md:inset-x-auto
-            top-[20vh] md:ml-[35vw] md:top-[25vh]
+            top-[20vh] md:ml-[35vw] 
             z-50
             mr-[10vw]
             max-w-[80vw] md:w-fit
-            p-6 md:p-8
+            p-6 md:p-6
             text-white
             hidden
             bg-black/80

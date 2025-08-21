@@ -50,17 +50,14 @@ export default  function Home() {
   sun: {
     intro: "The star at the center of our solar system, providing the energy that sustains life on Earth.",
     facts: [
-      "Type: Yellow dwarf star (G-type main-sequence)",
       "Diameter: ~1.39 million km",
       "Mass: ~333,000 times Earth’s mass",
       "Surface temperature: ~5,500°C (photosphere)",
       "Core temperature: ~15 million °C",
       "Composition: ~74% hydrogen, ~24% helium",
-      "Distance from Earth: ~150 million km (1 AU)",
       "Produces energy through nuclear fusion"
     ]
   },
-  
   mercury: {
     intro: "The smallest and closest planet to the Sun.",
     facts: [
@@ -381,7 +378,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         a: 3.8,
         e: 0.206,
         b: 3.8 * Math.sqrt(1 - 0.206 * 0.206),
-        speed: 0.24,
+        speed: 0.1,
         material: mercuryMaterial,
         inclination: 7,
         retrograde: false,
@@ -395,7 +392,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         a: 7.2,
         e: 0.007,
         b: 7.2 * Math.sqrt(1 - 0.007 * 0.007),
-        speed: 0.06,
+        speed: 0.01,
         material: venusMaterial,
         inclination: 3.4,
         retrograde: true,
@@ -609,15 +606,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "uranus",
-        a: 192,
+        a: 92,
         e: 0.046,
-        b: 192 * Math.sqrt(1 - 0.046 * 0.046),
+        b: 92 * Math.sqrt(1 - 0.046 * 0.046),
         speed: 0.007,
         material: uranusMaterial,
         inclination: 0.8,
         retrograde: true,
         radius: 4,
-        position: 192,
+        position: 92,
         rotationSpeed: -1.39,
         moons: [
           {
@@ -689,15 +686,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "neptune",
-        a: 300,
+        a: 200,
         e: 0.009,
-        b: 300 * Math.sqrt(1 - 0.009 * 0.009),
+        b: 200 * Math.sqrt(1 - 0.009 * 0.009),
         speed: 0.005,
         material: neptuneMaterial,
         inclination: 1.8,
         retrograde: false,
         radius: 3.9,
-        position: 300,
+        position: 200,
         rotationSpeed: 1.5,
         moons: [
           {
@@ -743,15 +740,15 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
       },
       {
         name: "pluto",
-        a: 395,
+        a: 295,
         e: 0.25,
-        b: 395 * Math.sqrt(1 - 0.25 * 0.25),
-        speed: 0.004,
+        b: 295 * Math.sqrt(1 - 0.25 * 0.25),
+        speed: 0.4,
         material: plutoMaterial,
         inclination: 17.2,
         retrograde: true,
-        radius: 0.18,
-        position: 395,
+        radius: 0.48,
+        position: 295,
         rotationSpeed: -0.16,
         moons: [
           {
@@ -1114,7 +1111,7 @@ const deimosMoonBumpTexture = textureLoader.load('/textures/mars/MOON/deimosbump
         );
       
         // 🔒 Lock camera instantly (no lag)
-        pCamera.position.lerp(desiredPos,0.2);
+        pCamera.position.lerp(desiredPos,0.8);
         pCamera.lookAt(planetPos);
       
         controls.enabled = false;
